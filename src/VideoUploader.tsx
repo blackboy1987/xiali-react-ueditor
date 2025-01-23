@@ -1,10 +1,10 @@
 import Button from './Button'
 import Input from './Input'
+import Label from './Label'
 import React, {CSSProperties, useState} from 'react'
+import Select from './Select'
 import Tag from './Tag'
 import Upload from './Upload'
-import Label from "@/components/ueditor/Label";
-import Select from "@/components/ueditor/Select";
 
 type StyleProps = {
   paramsConfig: CSSProperties;
@@ -14,7 +14,7 @@ type StyleProps = {
   warnInfo: CSSProperties;
 }
 
-const style:StyleProps = {
+const style: StyleProps = {
   paramsConfig: {
     paddingBottom: '10px',
     borderBottom: '1px solid rgb(217, 217, 217)',
@@ -48,10 +48,9 @@ const style:StyleProps = {
   },
 }
 
-const linkRegx:RegExp = /^https?:\/\/(([a-zA-Z0-9_-])+(\.)?)*(:\d+)?(\/((\.)?(\?)?=?&?[a-zA-Z0-9,_-](\?)?)*)*$/i
+const linkRegx = /^https?:\/\/(([a-zA-Z0-9_-])+(\.)?)*(:\d+)?(\/((\.)?(\?)?=?&?[a-zA-Z0-9,_-](\?)?)*)*$/i
 
 let timeoutInstance:NodeJS.Timeout;
-
 
 type StateProps = {
   sources:string[];
@@ -88,12 +87,6 @@ const defaultState:StateProps = {
 export default ({onChange,upload,progress}:{onChange:(html: string)=>void,upload?:(e:any)=>Promise<any>,progress?: number})=>{
   const [data, setData] = useState<StateProps>(defaultState);
 
-  const updateCurrentSource = (e:React.ChangeEvent<HTMLInputElement>) => {
-    setData({
-      ...data,
-      currentSource: e.target.value
-    })
-  }
   const showErrorMsg = (msg: string) => {
     setData({
       ...data,
@@ -109,34 +102,41 @@ export default ({onChange,upload,progress}:{onChange:(html: string)=>void,upload
       })
     }, 4000)
   }
-  const getFileType = (fileUrl:string):any => {
+
+  const updateCurrentSource = (e:React.ChangeEvent<HTMLInputElement>) => {
+    setData({
+      ...data,
+      currentSource: e.target.value
+    })
+  }
+  const getFileType = (fileUrl:string):string => {
     let type = fileUrl.match(/\.(\w+)$/)
-    return type ? type[1].toLowerCase() : 'mp3'
+    return type ? type[1].toLowerCase() : 'mp4'
   }
 
-  const generateHtml = (data:StateProps): string => {
-    let dataExtra = JSON.stringify({'poster': data.poster, 'name': data.name, 'author': data.author})
+  const generateHtml = (data:StateProps):string => {
     let len = data.sources.length
+    let html = ''
     if (len > 0) {
-      let html = ''
       let attr = ''
-      attr += !data.controls ? '' : ' controls="true" '
-      attr += !data.autoplay ? '' : ' autoplay="true" '
-      attr += !data.loop ? '' : ' loop="true" '
+      attr += data.controls === 'false' ? '' : ' controls="true" '
+      attr += data.autoplay === 'false' ? '' : ' autoplay="true" '
+      attr += data.loop === 'false' ? '' : ' loop="true" '
 
+      attr += data.muted === 'false' ? '' : ' muted '
       if (len === 1) {
-        html = `<audio src="${data.sources[0]}" ${attr} data-extra='${dataExtra}'>你的浏览器不支持 audio 标签</audio>`
+        html = `<video src="${data.sources[0]}" width="${data.width}" height="${data.height}" ${attr}>你的浏览器不支持 video 标签</video>`
       } else {
-        html = `<audio ${attr} data-extra='${dataExtra}'>`
+        html = `<video width="${data.width}" height="${data.height}" ${attr}>`
         data.sources.forEach(source => {
-          html += `<source src=${source} type="audio/${getFileType(source)}">`
+          html += `<source src=${source} type="video/${getFileType(source)}"}>`
         })
-        html += '你的浏览器不支持 audio 标签</audio>'
+        html += '你的浏览器不支持 video 标签</video>'
       }
 
       return html + '<p></p>'
     }
-    return "<p></p>";
+    return html;
   }
   const addSource = () => {
     let newsources = data.sources.concat([data.currentSource])
@@ -177,6 +177,7 @@ export default ({onChange,upload,progress}:{onChange:(html: string)=>void,upload
       }))
     }
   }
+
   const uploadFile = (e: any) => {
     if (!upload) return
     upload(e).then(url => {
@@ -188,7 +189,6 @@ export default ({onChange,upload,progress}:{onChange:(html: string)=>void,upload
       showErrorMsg(e.message);
     })
   };
-
   const changeConfig = (e:any, type: string) => {
     let value = e.target.value
     let boolType = ['controls', 'autoplay', 'muted', 'loop']
@@ -220,8 +220,7 @@ export default ({onChange,upload,progress}:{onChange:(html: string)=>void,upload
       return <span style={style.warnInfo}>至少添加一个链接</span>
     }
   }
-
-  const renderAudioConfig = () => {
+  const renderVideoConfig = () => {
     return (
       <form style={style.paramsConfig}>
         <Label name='controls'>
@@ -254,7 +253,6 @@ export default ({onChange,upload,progress}:{onChange:(html: string)=>void,upload
       </form>
     )
   };
-
   return (
     <div>
       <div>
@@ -273,14 +271,15 @@ export default ({onChange,upload,progress}:{onChange:(html: string)=>void,upload
         {renderSourceList()}
       </div>
       <span style={style.configTitle}>参数配置</span>
-      {renderAudioConfig()}
+      {renderVideoConfig()}
       <div style={{textAlign: 'center', padding: '20px 10px 0 10px'}}>
         {
-          <audio src={data.currentSource} controls style={{width: '400px'}}>
-            你的浏览器不支持 audio 标签
-          </audio>
+          <video src={data.currentSource} controls
+                 style={{width: '400px', height: '250px', backgroundColor: '#000'}}>
+            你的浏览器不支持 video 标签
+          </video>
         }
       </div>
     </div>
-  );
+  )
 }

@@ -14,7 +14,7 @@ const formItmeStyle = {
   marginBottom: '10px',
 }
 
-export default ({text='', link='', title='', newTab=false,onChange}:{text:string, link:string, title:string, newTab:boolean, showTips:boolean,onChange:(href:string)=>void})=>{
+export default ({text='', link='', title='', newTab=false,onChange}:{text?:string, link?:string, title?:string, newTab:boolean, showTips:boolean,onChange:(href:string)=>void})=>{
   const [text1, setText1] = useState(text||'');
   const [link1, setLink1] = useState(link||'');
   const [title1, setTitle1] = useState(title||'');

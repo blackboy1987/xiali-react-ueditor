@@ -121,7 +121,7 @@ class ReactUeditor extends React.Component {
     let _url = window.location.origin + url
     return new Promise((resolve, reject) => {
       for (i = 0; i < len; i++) {
-        const src = scriptTags[i].src;
+        var src = scriptTags[i].src
         if (src && src === _url) {
           scriptTags[i].parentElement.removeChild(scriptTags[i])
         }
@@ -157,7 +157,7 @@ class ReactUeditor extends React.Component {
       if (!config.mode) {
         config.mode = MODE.MODAL
       }
-      const btn = new window.UE.ui.Button({
+      var btn = new window.UE.ui.Button({
         name: uiName,
         title: config.menuText,
         cssRules: config.cssRules || '',
@@ -165,7 +165,7 @@ class ReactUeditor extends React.Component {
           this.setState({[this.getVisibleName(name)]: true})
           config.onIconClick && config.onIconClick()
         } : config.onIconClick,
-      });
+      })
       if (config.render) {
         this.setState(prevState => ({
           pluginsWithCustomRender: [
@@ -264,7 +264,7 @@ class ReactUeditor extends React.Component {
     let {uploadImage} = this.props
     if (uploadImage) {
       let promise = uploadImage(e)
-      if (!!promise && typeof promise.then === 'function') {
+      if (!!promise && typeof promise.then == 'function') {
         promise.then(imageUrl => {
           if (imageUrl instanceof Array) {
             imageUrl.forEach(url => {
@@ -299,7 +299,7 @@ class ReactUeditor extends React.Component {
     pasteImageStart && pasteImageStart(this.pasteImageAmount)
     images.forEach(src => {
       let promise = handlePasteImage(src)
-      if (!!promise && typeof promise.then === 'function') {
+      if (!!promise && typeof promise.then == 'function') {
         promise.then(newSrc => {
           --this.pasteImageAmount
           if (this.pasteImageAmount === 0) {
@@ -322,7 +322,7 @@ class ReactUeditor extends React.Component {
 
   initEditor = () => {
     const {config, plugins, onChange, value, getRef, onReady} = this.props
-    console.log("initEditor",plugins)
+
     if (plugins && Array.isArray(plugins)) {
       plugins.forEach(plugin => {
         if (typeof plugin === 'string') {
@@ -336,14 +336,14 @@ class ReactUeditor extends React.Component {
     // 即将废弃
     this.state.extendControls.forEach(control => {
       window.UE.registerUI(this.getRegisterUIName(control.name), (editor, uiName) => {
-        const btn = new window.UE.ui.Button({
+        var btn = new window.UE.ui.Button({
           name: uiName,
           title: control.menuText,
           cssRules: control.cssRules ? control.cssRules : '',
           onclick: () => {
             this.setState({[this.getVisibleName(control.name)]: true})
           },
-        });
+        })
         return btn
       }, undefined, this.containerID)
     })

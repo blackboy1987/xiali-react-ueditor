@@ -1,7 +1,8 @@
 import Button from './Button'
 import Dialog from 'rc-dialog'
-import React, {ReactNode} from 'react'
+import React from 'react'
 import 'rc-dialog/assets/index.css'
+import {ModalProps} from "./type";
 
 
 export default ({
@@ -12,19 +13,8 @@ export default ({
                   beforeClose,
                   onClose,
                   onConfirm,
-                  children,
-                }: {
-  title: string,
-  visible: boolean,
-  zIndex: number,
-  alignStyle: string,
-  extendControls: string[],
-  debug: boolean,
-  beforeClose?: () => void,
-  onClose: () => void,
-  onConfirm?: () => void,
-  children: ReactNode
-}) => {
+                  component,
+                }: ModalProps) => {
   const closeModal = () => {
     if (beforeClose) {
       beforeClose();
@@ -49,7 +39,7 @@ export default ({
       maskAnimation='fade'
       zIndex={zIndex}
       style={alignStyle === 'middle' ? {top: '50%', transform: 'translateY(-50%)'} : {}}>
-      {children}
+      {component()}
     </Dialog>
   )
 }
